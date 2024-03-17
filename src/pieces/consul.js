@@ -10,11 +10,19 @@ export default class Consul extends Piece {
     if(!this.checkForMoveLength(src, dest)) return false
     if(!(isSameDiagonal(src, dest) || isSameRow(src, dest) || isSameColumn(src, dest))) return false
     const path = this.getSrcToDestPath(src, dest)
+
+    let pathEmpty = true
     for (const i of path) {
-      if (squares[i] === null) return false;
+      if (squares[i] !== null) pathEmpty = false;
+    }
+
+    let pathFullyOccupied = true
+
+    for (const i of path) {
+      if (squares[i] === null) pathFullyOccupied = false;
     }
   
-    return true
+    return pathEmpty || pathFullyOccupied
   }
 
   /**
