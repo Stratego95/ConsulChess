@@ -95,6 +95,11 @@ export default class Game extends React.Component {
         squares[this.state.sourceSelection] = null;
 
         if(castleInfo.isCastling) {
+          squares[i].castleInfo = {
+            isCastling:  false,
+            allowedSource: -1,
+            allowedDestinations: []
+           }
 
           squares[castleInfo.allowedSource].style = { ...squares[castleInfo.allowedSource].style, backgroundColor: "RGB(111,143,114)" }; // Emerald from http://omgchess.blogspot.com/2015/09/chess-board-color-schemes.html
 

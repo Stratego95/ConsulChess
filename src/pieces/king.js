@@ -29,7 +29,7 @@ export default class King extends Piece {
       this.castleInfo.allowedSource = castleInfo.allowedSource;  
       this.castleInfo.allowedDestinations = castleInfo.allowedDestinations;  
     } 
-    if(canMoveRegular) this.hasMoved = true; 
+    if(canMoveRegular || castleInfo.canCastle) this.hasMoved = true; 
     console.log(castleInfo.canCastle)
     return canMoveRegular || castleInfo.canCastle;
   }
