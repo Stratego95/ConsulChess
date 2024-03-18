@@ -30,7 +30,6 @@ export default class King extends Piece {
       this.castleInfo.allowedDestinations = castleInfo.allowedDestinations;  
     } 
     if(canMoveRegular || castleInfo.canCastle) this.hasMoved = true; 
-    console.log(castleInfo.canCastle)
     return canMoveRegular || castleInfo.canCastle;
   }
 
@@ -65,7 +64,6 @@ export default class King extends Piece {
 
   canCastle(src, dest, squares) {
     // check if king has moved already
-    console.log(this)
     if(this.hasMoved) return {canCastle: false};
     
     let rookIdx = -1;
