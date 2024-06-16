@@ -2,8 +2,8 @@ import Piece from './piece.js';
 import { isSameRow, isSameColumn, isSameDiagonal } from '../helpers'
 
 export default class Consul extends Piece {
-  constructor(player) {
-    super(player, (player === 1 ? "https://upload.wikimedia.org/wikipedia/commons/7/7c/Chess_Blt45.svg" : "https://upload.wikimedia.org/wikipedia/commons/5/5a/Chess_Bdt45.svg"));
+  constructor(player, name) {
+    super(player, name, (player === 1 ? "https://upload.wikimedia.org/wikipedia/commons/7/7c/Chess_Blt45.svg" : "https://upload.wikimedia.org/wikipedia/commons/5/5a/Chess_Bdt45.svg"));
   }
 
   isMovePossible(src, dest, squares) {

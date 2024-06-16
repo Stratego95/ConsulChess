@@ -11,7 +11,7 @@ export default function Square(props) {
       key={props.keyVal}
     >
       {/* {props.keyVal} */}
-    </button>
+      </button>
   );
 
 }

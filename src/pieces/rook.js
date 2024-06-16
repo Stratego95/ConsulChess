@@ -2,8 +2,8 @@ import Piece from './piece.js';
 import { isSameRow, isSameColumn, isPathClean } from '../helpers'
 
 export default class Rook extends Piece {
-  constructor(player) {
-    super(player, (player === 1 ? "https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg" : "https://upload.wikimedia.org/wikipedia/commons/f/ff/Chess_rdt45.svg"));
+  constructor(player, name) {
+    super(player, name, (player === 1 ? "https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg" : "https://upload.wikimedia.org/wikipedia/commons/f/ff/Chess_rdt45.svg"));
     this.hasMoved = false
   }
 

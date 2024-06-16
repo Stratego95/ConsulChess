@@ -1,5 +1,4 @@
 import React from 'react';
-
 import '../index.css';
 import Board from './board.js';
 import King from '../pieces/king'
@@ -17,7 +16,8 @@ export default class Game extends React.Component {
       sourceSelection: -1,
       status: '',
       turn: 'white',
-      castleInfo: { isCastling: false }
+      castleInfo: { isCastling: false },
+      notation: []
     }
   }
 
@@ -78,21 +78,35 @@ export default class Game extends React.Component {
       const whiteFallenSoldiers = [];
       const blackFallenSoldiers = [];
       const isDestEnemyOccupied = Boolean(squares[i]);
-      const isMovePossible = squares[this.state.sourceSelection].isMovePossible(this.state.sourceSelection, i, squares, isDestEnemyOccupied);
-      const castleInfo = Object.hasOwn(squares[this.state.sourceSelection], "castleInfo") ? squares[this.state.sourceSelection].castleInfo : {};
+      const srcSquare = this.state.sourceSelection;
+      const destSquare = i;
+      const notation = this.state.notation;
+      const isMovePossible = squares[srcSquare].isMovePossible(srcSquare, destSquare, squares, isDestEnemyOccupied, notation, whiteFallenSoldiers, blackFallenSoldiers);
+      const castleInfo = Object.hasOwn(squares[srcSquare], "castleInfo") ? squares[srcSquare].castleInfo : {};
 
       if (isMovePossible) {
-        if (squares[i] !== null) {
-          if (squares[i].player === 1) {
-            whiteFallenSoldiers.push(squares[i]);
-          }
-          else {
-            blackFallenSoldiers.push(squares[i]);
+        if (!(squares[srcSquare].name === "P" && squares[srcSquare].pawnConversionHappened) ) {
+          if (squares[destSquare] !== null) {
+            if (squares[destSquare].player === 1) {
+              whiteFallenSoldiers.push(squares[destSquare]);
+            }
+            else {
+              blackFallenSoldiers.push(squares[destSquare]);
+            }
           }
         }
 
-        squares[i] = squares[this.state.sourceSelection];
-        squares[this.state.sourceSelection] = null;
+        // update notation
+        const name = squares[srcSquare].getName();
+        const player = squares[srcSquare].getPlayer();
+        const moveNumber = notation.length + 1;
+        notation.push({moveNumber, player, name, srcSquare, destSquare})
+
+
+        if (!(squares[srcSquare].name === "P" && squares[srcSquare].pawnConversionHappened) ) {
+          squares[destSquare] = squares[srcSquare];
+        }
+        squares[srcSquare] = null;
 
         if(castleInfo.isCastling) {
           squares[i].castleInfo = {
@@ -113,7 +127,7 @@ export default class Game extends React.Component {
         }
 
         const isCheckMe = this.isCheckForPlayer(squares, this.state.player)
-
+        
         if (isCheckMe) {
           this.setState(oldState => ({
             status: "Wrong selection. Choose valid source and destination again. Now you have a check!",
@@ -130,9 +144,12 @@ export default class Game extends React.Component {
             blackFallenSoldiers: [...oldState.blackFallenSoldiers, ...blackFallenSoldiers],
             player,
             status: '',
-            turn
+            turn,
+            notation
           }));
         }
+        console.log("notation")
+        console.log(this.state.notation)
       }
       else {
         this.setState({

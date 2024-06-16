@@ -2,8 +2,8 @@ import Piece from './piece.js';
 import { isSameDiagonal, isSameRow } from '../helpers'
 
 export default class King extends Piece {
-  constructor(player) {
-    super(player, (player === 1 ? "https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg" : "https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg"));
+  constructor(player, name) {
+    super(player, name, (player === 1 ? "https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg" : "https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg"));
     this.hasMoved = false
     this.castleInfo = {
      isCastling:  false,
@@ -12,7 +12,12 @@ export default class King extends Piece {
     }
   }
 
-  isMovePossible(src, dest, squares, isDestEnemyOccupied, checkForOpponentsCastle) {
+  isMovePossible(src, dest, squares, checkForOpponentsCastle) {
+    console.log("ismovepossible")
+    console.log(src)
+    console.log(dest)
+    console.log(checkForOpponentsCastle)
+
     const canMoveRegular = ((src - 11 === dest && isSameDiagonal(src, dest)) ||
       src - 10 === dest ||
       (src - 9 === dest && isSameDiagonal(src, dest)) ||
@@ -22,6 +27,7 @@ export default class King extends Piece {
       (src + 9 === dest && isSameDiagonal(src, dest)) ||
       (src - 1 === dest && isSameRow(src, dest)))
 
+      console.log("King, ", canMoveRegular)
     if(checkForOpponentsCastle) return canMoveRegular;
     const castleInfo = this.canCastle(src, dest, squares);
     if(castleInfo.canCastle){
