@@ -22,33 +22,17 @@ export default class Game extends React.Component {
   }
 
   handleClick(i) {
+    const srcSquare = this.state.sourceSelection;
+
     const squares = [...this.state.squares];
 
     if(this.state.castleInfo.isCastling) {
-      if(this.state.castleInfo.allowedDestinations.includes(i)) {
-        squares[i] = squares[this.state.sourceSelection];
-        squares[this.state.sourceSelection] = null;
-
-        let player = this.state.player === 1 ? 2 : 1;
-        let turn = this.state.turn === 'white' ? 'black' : 'white';
-        squares[i].style = { ...squares[i].style, backgroundColor: "" };
-
-        this.setState(oldState => ({
-          sourceSelection: -1,
-          squares,
-          player,
-          status: '',
-          turn,
-          castleInfo: { isCastling: false }
-        }));
-
-        return
-    } else {
-      return
-}
+      const lastMove = this.state.notation[this.state.notation.length-1];
+      this.handleCastling(i, lastMove);
+      return;
     }
 
-    if (this.state.sourceSelection === -1) {
+    if (srcSquare === -1) {
       if ((!squares[i] || squares[i].player !== this.state.player)) {
         this.setState({ status: "Wrong selection. Choose player " + this.state.player + " pieces." });
         if (squares[i]) {
@@ -65,7 +49,7 @@ export default class Game extends React.Component {
       return
     }
 
-    squares[this.state.sourceSelection].style = { ...squares[this.state.sourceSelection].style, backgroundColor: "" };
+    squares[srcSquare].style = { ...squares[srcSquare].style, backgroundColor: "" };
 
     if (squares[i] && squares[i].player === this.state.player) {
       this.setState({
@@ -78,7 +62,6 @@ export default class Game extends React.Component {
       const whiteFallenSoldiers = [];
       const blackFallenSoldiers = [];
       const isDestEnemyOccupied = Boolean(squares[i]);
-      const srcSquare = this.state.sourceSelection;
       const destSquare = i;
       const notation = this.state.notation;
       const isMovePossible = squares[srcSquare].isMovePossible(srcSquare, destSquare, squares, isDestEnemyOccupied, notation, whiteFallenSoldiers, blackFallenSoldiers);
@@ -95,36 +78,22 @@ export default class Game extends React.Component {
             }
           }
         }
-
-        // update notation
-        const name = squares[srcSquare].getName();
-        const player = squares[srcSquare].getPlayer();
-        const moveNumber = notation.length + 1;
-        notation.push({moveNumber, player, name, srcSquare, destSquare})
-
-
+          // update notation
+          const name = squares[srcSquare].getName();
+          const playerS = squares[srcSquare].getPlayer();
+          const moveNumber = notation.length + 1;
+          notation.push({moveNumber, playerS, name, srcSquare, destSquare})
+  
         if (!(squares[srcSquare].name === "P" && squares[srcSquare].pawnConversionHappened) ) {
           squares[destSquare] = squares[srcSquare];
         }
         squares[srcSquare] = null;
 
-        if(castleInfo.isCastling) {
-          squares[i].castleInfo = {
-            isCastling:  false,
-            allowedSource: -1,
-            allowedDestinations: []
-           }
-
-          squares[castleInfo.allowedSource].style = { ...squares[castleInfo.allowedSource].style, backgroundColor: "RGB(111,143,114)" }; // Emerald from http://omgchess.blogspot.com/2015/09/chess-board-color-schemes.html
-
-          this.setState({
-            castleInfo: castleInfo,
-            sourceSelection: castleInfo.allowedSource,
-            squares,
-            status: "Choose destination for the castle rook",
-          });
-          return
+        if (castleInfo.isCastling) {
+          return this.resetForCastling(destSquare, castleInfo, squares)
         }
+
+        
 
         const isCheckMe = this.isCheckForPlayer(squares, this.state.player)
         
@@ -181,6 +150,62 @@ export default class Game extends React.Component {
         canPieceKillPlayersKing(curr, idx)
         && true),
       false)
+  }
+
+  handleCastling(destSquare, lastMove) {
+    const srcSquare = this.state.sourceSelection;
+    const squares = [...this.state.squares];
+    const castling = this.state.castleInfo.allowedDestinations.includes(destSquare)
+    let kingMove = false
+    if(castling) {
+      squares[destSquare] = squares[srcSquare];
+      squares[srcSquare] = null;
+      squares[destSquare].style = { ...squares[destSquare].style, backgroundColor: "" };
+  }
+  
+  if (this.state.castleInfo.possibleNormalKingMove) {
+    squares[lastMove.destSquare].style = { ...squares[lastMove.destSquare].style, backgroundColor: "" };
+    if(lastMove.destSquare === destSquare) {
+      kingMove = true
+      squares[destSquare].style = { ...squares[destSquare].style, backgroundColor: "" };
+      squares[srcSquare].style = { ...squares[srcSquare].style, backgroundColor: "" };
+    }
+  }
+  
+  if(!kingMove && !castling) return
+
+  let player = this.state.player === 1 ? 2 : 1;
+  let turn = this.state.turn === 'white' ? 'black' : 'white';
+  this.setState(oldState => ({
+    sourceSelection: -1,
+    squares,
+    player,
+    status: '',
+    turn,
+    castleInfo: { isCastling: false }
+  }));
+  }
+
+  resetForCastling(i, castleInfo, squares) {
+      squares[castleInfo.allowedSource].style = { ...squares[castleInfo.allowedSource].style, backgroundColor: "RGB(111,143,114)" }; // Emerald from http://omgchess.blogspot.com/2015/09/chess-board-color-schemes.html
+
+      if (castleInfo.possibleNormalKingMove) {
+        squares[i].style = { ...squares[i].style, backgroundColor: "RGB(111,143,114)" }; // Emerald from http://omgchess.blogspot.com/2015/09/chess-board-color-schemes.html
+      }
+
+      squares[i].castleInfo = {
+        isCastling:  false,
+        allowedSource: -1,
+        allowedDestinations: []
+       }
+
+      this.setState({
+        castleInfo: castleInfo,
+        sourceSelection: castleInfo.allowedSource,
+        squares,
+        status: "Choose destination for the castle rook",
+      });
+      return
   }
 
   render() {

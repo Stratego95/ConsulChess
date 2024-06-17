@@ -8,16 +8,12 @@ export default class King extends Piece {
     this.castleInfo = {
      isCastling:  false,
      allowedSource: -1,
-     allowedDestinations: []
+     allowedDestinations: [],
+     possibleNormalKingMove: false
     }
   }
 
   isMovePossible(src, dest, squares, checkForOpponentsCastle) {
-    console.log("ismovepossible")
-    console.log(src)
-    console.log(dest)
-    console.log(checkForOpponentsCastle)
-
     const canMoveRegular = ((src - 11 === dest && isSameDiagonal(src, dest)) ||
       src - 10 === dest ||
       (src - 9 === dest && isSameDiagonal(src, dest)) ||
@@ -27,13 +23,13 @@ export default class King extends Piece {
       (src + 9 === dest && isSameDiagonal(src, dest)) ||
       (src - 1 === dest && isSameRow(src, dest)))
 
-      console.log("King, ", canMoveRegular)
     if(checkForOpponentsCastle) return canMoveRegular;
     const castleInfo = this.canCastle(src, dest, squares);
     if(castleInfo.canCastle){
       this.castleInfo.isCastling = true;
       this.castleInfo.allowedSource = castleInfo.allowedSource;  
       this.castleInfo.allowedDestinations = castleInfo.allowedDestinations;  
+      this.castleInfo.possibleNormalKingMove = castleInfo.possibleNormalKingMove;  
     } 
     if(canMoveRegular || castleInfo.canCastle) this.hasMoved = true; 
     return canMoveRegular || castleInfo.canCastle;
@@ -96,7 +92,9 @@ export default class King extends Piece {
 
     const allowedDestinations = this.getRookDestination(src, dest, squares, rookIdx);
 
-    return {canCastle: true, allowedSource: rookIdx, allowedDestinations: allowedDestinations};
+    const possibleNormalKingMove = Math.abs(src - dest) === 1;
+
+    return {canCastle: true, allowedSource: rookIdx, allowedDestinations: allowedDestinations, possibleNormalKingMove: possibleNormalKingMove};
   }
 
   getRookIdx(src, dest) {
