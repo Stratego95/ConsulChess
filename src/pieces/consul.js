@@ -75,6 +75,9 @@ export default class Consul extends Piece {
     else if (Math.abs(src - dest) % 9 === 0 && Math.abs(src - dest) > 27) {
       return false
     }
+    else if (isSameRow(src, dest) && Math.abs(src - dest) > 3) {
+      return false
+    }
     return true
   }
 }
