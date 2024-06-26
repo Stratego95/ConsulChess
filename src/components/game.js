@@ -2,8 +2,14 @@ import React from 'react';
 import '../index.css';
 import Board from './board.js';
 import King from '../pieces/king'
+import Queen from '../pieces/queen'
 import FallenSoldierBlock from './fallen-soldier-block.js';
 import initialiseChessBoard from '../helpers/board-initialiser.js';
+import PiecePicker from './../helpers/piecepickermodal'
+import Knight from '../pieces/knight.js';
+import Rook from '../pieces/rook.js';
+import Bishop from '../pieces/bishop.js';
+import Consul from '../pieces/consul.js';
 
 export default class Game extends React.Component {
   constructor() {
@@ -17,7 +23,9 @@ export default class Game extends React.Component {
       status: '',
       turn: 'white',
       castleInfo: { isCastling: false },
-      notation: []
+      notation: [],
+      showPiecePicker: false,
+      destSquare: -1
     }
   }
 
@@ -66,6 +74,8 @@ export default class Game extends React.Component {
       const notation = this.state.notation;
       const isMovePossible = squares[srcSquare].isMovePossible(srcSquare, destSquare, squares, isDestEnemyOccupied, notation, whiteFallenSoldiers, blackFallenSoldiers);
       const castleInfo = Object.hasOwn(squares[srcSquare], "castleInfo") ? squares[srcSquare].castleInfo : {};
+
+      this.handlePawnConversion(squares, srcSquare, destSquare)
 
       if (isMovePossible) {
         if (!(squares[srcSquare].name === "P" && squares[srcSquare].pawnConversionHappened) ) {
@@ -117,8 +127,6 @@ export default class Game extends React.Component {
             notation
           }));
         }
-        console.log("notation")
-        console.log(this.state.notation)
       }
       else {
         this.setState({
@@ -208,10 +216,39 @@ export default class Game extends React.Component {
       return
   }
 
+  handlePawnConversion(squares, srcSquare, destSquare) {
+    if (!(squares[srcSquare].name === "P" && squares[srcSquare].pawnConversionHappened)) return
+    this.setState({
+      showPiecePicker: true,
+      destSquare
+    })
+  }
+
+  handlePieceChosen(piece, player) {
+    const squares = this.state.squares
+    const destSquare = this.state.destSquare
+    if(destSquare == -1) return
+    
+    if(piece === "R") squares[destSquare] = new Rook(player,"R");
+    if(piece === "N") squares[destSquare] = new Knight(player,"N")
+    if(piece === "B") squares[destSquare] = new Bishop(player,"B")
+    if(piece === "C") squares[destSquare] = new Consul(player,"C")
+    if(piece === "Q") squares[destSquare] = new Queen(player,"Q")
+
+      this.setState({
+        showPiecePicker: false,
+        squares,
+        destSquare: -1
+      })
+  }
+
   render() {
 
     return (
       <div>
+        <div>
+        {this.state.showPiecePicker && <PiecePicker player={this.state.player} pieceChosen={(piece, player) => this.handlePieceChosen(piece, player)} /> }
+        </div>
         <div className="game">
           <div className="game-board">
             <Board

@@ -1,6 +1,5 @@
 import Piece from './piece.js';
 import { isSameDiagonal, isPathClean } from '../helpers'
-import Queen from './queen.js';
 
 export default class Pawn extends Piece {
   constructor(player, name) {
@@ -104,14 +103,12 @@ export default class Pawn extends Piece {
      if(dest < 10) {
       this.pawnConversionHappened = true;
       if (isDestEnemyOccupied) blackFallenSoldiers.push(squares[dest]);
-      squares[dest] = new Queen(1, "Q")
      }
     }
     else if (this.player === 2) {
       if(dest > 69) {
         this.pawnConversionHappened = true;
         if (isDestEnemyOccupied) whiteFallenSoldiers.push(squares[dest]);
-        squares[dest] = new Queen(2, "Q")
      }
     }
   }
