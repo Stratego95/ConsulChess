@@ -38,18 +38,13 @@ export default function PiecePicker(props) {
     setBishop(new Bishop(player, "B"))
     setConsul(new Consul(player, "C"))
     setQueen(new Queen(player, "Q"))
-  }, [])
-
-  function openModal() {
-    setIsOpen(true);
-  }
+  }, [props.player])
 
   function closeModal() {
     setIsOpen(false);
   }
 
   const handleOnClick = (piece, player) => {
-    console.log("in handke with, ", piece)
     props.pieceChosen(piece, player)
     closeModal()
   }

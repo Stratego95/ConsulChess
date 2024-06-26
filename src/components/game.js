@@ -227,7 +227,7 @@ export default class Game extends React.Component {
   handlePieceChosen(piece, player) {
     const squares = this.state.squares
     const destSquare = this.state.destSquare
-    if(destSquare == -1) return
+    if(destSquare === -1) return
     
     if(piece === "R") squares[destSquare] = new Rook(player,"R");
     if(piece === "N") squares[destSquare] = new Knight(player,"N")
